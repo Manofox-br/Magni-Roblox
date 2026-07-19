@@ -1,0 +1,8 @@
+# Discord
+discord.py
+PyNaCl
+davey
+
+# Database
+sqlalchemy
+dotenv

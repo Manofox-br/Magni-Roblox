@@ -1,0 +1,27 @@
+# === python === #
+__pycache__/
+*py[cod]
+*.pyo
+
+# === cache ===
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# === temps === #
+*.log
+*.tmp
+*.bak
+
+# === IDE's ===
+.vscode/
+.acode/
+.acode_projects/
+.idea/
+*swp
+
+# === config file ===
+.env.env
+.env
+.env
