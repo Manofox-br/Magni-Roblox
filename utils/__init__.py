@@ -1,5 +1,6 @@
-from .bump_event import checkBump
+from .bump_event import checkBump, setup_bump
 
 __all__ = [
-  "checkBump"
+  "checkBump",
+  "setup_bump"
 ]

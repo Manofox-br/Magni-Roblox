@@ -38,6 +38,24 @@ class BumpClaimView(ui.LayoutView):
     
     self.add_item(container)
 
+async def setup_bump(bot:discord.ext.commands.Bot):
+  ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
+  ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
+  if ultimo_bump:
+    ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
+    agora = datetime.datetime.now()
+    restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
+    segundos = max(restante.total_seconds(), 0)
+    await asyncio.sleep(segundos)
+  data.setServerVar("ultimo_bump_timestamp", str(datetime.datetime.now().timestamp()), config.guild_id)
+
+  arquivos = [
+      discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
+  ]
+  
+  channel = await bot.fetch_channel(1528033286998462577)
+  await channel.send(view=BumpView(), files=arquivos)
+
 class checkBump:
   def __init__(self, bot:discord.ext.commands.Bot, msg:discord.Message):
     self.bot = bot
@@ -101,5 +119,6 @@ class checkBump:
           restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
           segundos = max(restante.total_seconds(), 0)
           await asyncio.sleep(segundos)
+        data.setServerVar("ultimo_bump_timestamp", str(datetime.datetime.now().timestamp()))
 
         await self.channel.send(view=BumpView(), files=arquivos)

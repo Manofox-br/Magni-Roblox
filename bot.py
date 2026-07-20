@@ -163,6 +163,7 @@ async def on_message(msg:discord.Message):
 
 @bot.event
 async def on_ready():
+  setup_bumb(bot)
   for guild in bot.guilds:
     invites[guild.id] = await guild.invites()
   await entrar_chamada()
