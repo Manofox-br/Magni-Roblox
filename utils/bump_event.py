@@ -94,7 +94,7 @@ class checkBump:
         await self.channel.send(view=BumpClaimView(autor, streak, xp), files=arquivos)
         
         ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
-        ultimo bumb = ultimo_bumb if ultimo_bumb else datetime.datetime.now().timestamp()
+        ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
         if ultimo_bump:
           ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
           agora = datetime.datetime.now()
