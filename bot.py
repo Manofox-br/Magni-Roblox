@@ -1,5 +1,6 @@
 import discord, os, config, datetime, ast, asyncio, itertools
-from discord.ext import commands, task
+from discord.ext import commands, tasks
+from utils import checkBump
 from database import data
 
 from discord import ui
@@ -99,7 +100,7 @@ class MudarStatus:
     
     self.iniciar.start()
   
-  @task.loop(seconds=12)
+  @tasks.loop(seconds=12)
   async def iniciar(self):
     if not bot.is_closed():
       try:
@@ -154,6 +155,7 @@ async def on_member_join(member:discord.Member):
 
 @bot.event
 async def on_message(msg:discord.Message):
+  checkBump(bot, msg)
   if msg.author.bot:
     return
   msg.content = msg.content.lower()
