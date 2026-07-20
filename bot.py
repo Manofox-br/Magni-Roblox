@@ -1,6 +1,6 @@
 import discord, os, config, datetime, ast, asyncio, itertools
 from discord.ext import commands, tasks
-from utils import checkBump
+from utils import CheckBump, SetupBump
 from database import data
 
 from discord import ui
@@ -55,7 +55,7 @@ class InvitesView(ui.LayoutView):
     
     self.add_item(ui.TextDisplay(f"# 📊 • Status do convite"))
     self.add_item(ui.Separator())
-    self.add_item(ui.TextDisplay(f"""🛎️│Pessoa que entrou: {member.mention}
+    self.add_item(ui.TextDisplay(f"""🛎️ │ Pessoa que entrou: {member.mention}
 📌 | Pessoa que convidou: {autor_mention}"""))
     if isinstance(autor_invites, int):
       self.add_item(ui.TextDisplay(f"✉️ | Pessoas convidadas: {autor_invites}"))
@@ -155,7 +155,7 @@ async def on_member_join(member:discord.Member):
 
 @bot.event
 async def on_message(msg:discord.Message):
-  checkBump(bot, msg)
+  CheckBump(bot, msg)
   if msg.author.bot:
     return
   msg.content = msg.content.lower()
@@ -163,7 +163,7 @@ async def on_message(msg:discord.Message):
 
 @bot.event
 async def on_ready():
-  setup_bumb(bot)
+  SetupBump(bot)
   for guild in bot.guilds:
     invites[guild.id] = await guild.invites()
   await entrar_chamada()

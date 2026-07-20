@@ -22,7 +22,7 @@ class BumpClaimView(ui.LayoutView):
     container = ui.Container(accent_color=config.commands_colors["main"])
 
     timestamp = int(datetime.datetime.now().timestamp()) + (120 * 60)
-    thumb = autor.display_avatar.url if autor.avatar.url else "attachment://gif_alerta.gif"
+    thumb = autor.display_avatar.url if autor.display_avatar.url else "attachment://gif_alerta.gif"
     
     sessao = ui.Section(
       ui.TextDisplay(f"## {autor.mention} bumpou o servidor! <a:wumpus:1528542753158467704>"),
@@ -38,25 +38,32 @@ class BumpClaimView(ui.LayoutView):
     
     self.add_item(container)
 
-async def setup_bump(bot:discord.ext.commands.Bot):
-  ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
-  ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
-  if ultimo_bump:
-    ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
-    agora = datetime.datetime.now()
-    restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
-    segundos = max(restante.total_seconds(), 0)
-    await asyncio.sleep(segundos)
-  data.setServerVar("ultimo_bump_timestamp", str(datetime.datetime.now().timestamp()), config.guild_id)
-
-  arquivos = [
-      discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
-  ]
+class SetupBump:
+  def __init__(self, bot:discord.ext.commands.Bot):
+    self.bot = bot
+    self.task.start()
   
-  channel = await bot.fetch_channel(1528033286998462577)
-  await channel.send(view=BumpView(), files=arquivos)
+  @discord.ext.tasks.loop(minutes=1)
+  async def task(self):
+    channel = await self.bot.fetch_channel(1528033286998462577)
+    ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
+    ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
+    arquivos = [
+      discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
+    ]
 
-class checkBump:
+    segundos = 0
+    if ultimo_bump:
+      ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
+      agora = datetime.datetime.now()
+      restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
+      segundos = max(restante.total_seconds(), 0)
+    
+    if segundos < 1:
+      data.setServerVar("ultimo_bump_timestamp", str(datetime.datetime.now().timestamp()))
+      await channel.send(view=BumpView(), files=arquivos)
+  
+class CheckBump:
   def __init__(self, bot:discord.ext.commands.Bot, msg:discord.Message):
     self.bot = bot
     self.msg = msg
@@ -84,41 +91,41 @@ class checkBump:
     arquivos = [
       discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
     ]
-    if self.msg.author == 302050872383242240:
+    if self.msg.author.id in [302050872383242240, 1331875785312833594]:
+      ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
+      ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
+      segundos = 0
+      if ultimo_bump:
+        ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
+        agora = datetime.datetime.now()
+        restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
+        segundos = max(restante.total_seconds(), 0)
+      if segundos > 0:
+        return
+      
       embed = self.msg.embeds[0]
-      if "Bumb done" in embed.description:
+      desc = embed.description or "Bump done"
+      if "Bump done" in desc:
         autor = await self.achar_autor()
         arquivos = [
-        discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
-      ]
+          discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
+        ]
       
-      ultimo = data.getUserVar('ultimo_bumper', config.guild_id)
-      ultimo = int(ultimo) if ultimo else None
+        ultimo = data.getUserVar('ultimo_bumper', config.guild_id)
+        ultimo = int(ultimo) if ultimo else None
     
-      if ultimo != autor.id:
-        data.setUserVar("streak_bumps", "0", autor.id)
-        data.setServerVar("ultimo_bumper", str(autor.id), config.guild_id)
+        if ultimo != autor.id:
+          data.setUserVar("streak_bumps", "0", autor.id)
+          data.setServerVar("ultimo_bumper", str(autor.id), config.guild_id)
     
-        streak = data.getUserVar("streak_bumps", autor.id)
-        streak = int(streak) if streak else 0
-        streak += 1
-        data.setUserVar("streak_bumps", str(streak), autor.id)
+          streak = data.getUserVar("streak_bumps", autor.id)
+          streak = int(streak) if streak else 0
+          streak += 1
+          data.setUserVar("streak_bumps", str(streak), autor.id)
 
-        xp = data.getUserVar("xp", autor.id)
-        xp = int(xp) if xp else 0
-        xp += random.randint(50, 125)
-        data.setUserVar("xp", str(xp), autor.id)
+          xp = data.getUserVar("xp", autor.id)
+          xp = int(xp) if xp else 0
+          xp += random.randint(50, 125)
+          data.setUserVar("xp", str(xp), autor.id)
     
-        await self.channel.send(view=BumpClaimView(autor, streak, xp), files=arquivos)
-        
-        ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
-        ultimo_bump = ultimo_bump if ultimo_bump else datetime.datetime.now().timestamp()
-        if ultimo_bump:
-          ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
-          agora = datetime.datetime.now()
-          restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
-          segundos = max(restante.total_seconds(), 0)
-          await asyncio.sleep(segundos)
-        data.setServerVar("ultimo_bump_timestamp", str(datetime.datetime.now().timestamp()))
-
-        await self.channel.send(view=BumpView(), files=arquivos)
+          await self.channel.send(view=BumpClaimView(autor, streak, xp), files=arquivos)
