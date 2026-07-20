@@ -25,7 +25,7 @@ class BumpClaimView(ui.LayoutView):
     thumb = autor.display_avatar.url if autor.avatar.url else "attachment://gif_alerta.gif"
     
     sessao = ui.Section(
-      ui.TextDisplay(f"## {autor.mention} bumpou o servidor! :wumpus:"),
+      ui.TextDisplay(f"## {autor.mention} bumpou o servidor! <a:wumpus:1528542753158467704>"),
       accessory=ui.Thumbnail(media=thumb)
     )
     container.add_item(sessao)
