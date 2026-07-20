@@ -66,9 +66,9 @@ class checkBump:
     arquivos = [
       discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
     ]
-    if self.msg.author:# == 302050872383242240:
-      #embed = self.msg.embeds[0]
-      if "bumb done":# in embed.description:
+    if self.msg.author == 302050872383242240:
+      embed = self.msg.embeds[0]
+      if "bumb done" in embed.description:
         autor = await self.achar_autor()
         arquivos = [
         discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
@@ -92,5 +92,14 @@ class checkBump:
         data.setUserVar("xp", str(xp), autor.id)
     
         await self.channel.send(view=BumpClaimView(autor, streak, xp), files=arquivos)
-        await asyncio.sleep(120 * 60)
+        
+        ultimo_bump = data.getServerVar("ultimo_bump_timestamp", config.guild_id)
+        ultimo bumb = ultimo_bumb if ultimo_bumb else datetime.datetime.now().timestamp()
+        if ultimo_bump:
+          ultimo_bump = datetime.datetime.fromtimestamp(int(ultimo_bump))
+          agora = datetime.datetime.now()
+          restante = (ultimo_bump + datetime.timedelta(hours=2)) - agora
+          segundos = max(restante.total_seconds(), 0)
+          await asyncio.sleep(segundos)
+
         await self.channel.send(view=BumpView(), files=arquivos)
