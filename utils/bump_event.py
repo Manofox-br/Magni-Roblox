@@ -68,12 +68,12 @@ class checkBump:
     ]
     if self.msg.author == 302050872383242240:
       embed = self.msg.embeds[0]
-      if "bumb done" in embed.description:
+      if "Bumb done" in embed.description:
         autor = await self.achar_autor()
         arquivos = [
         discord.File("imagens/gif_alerta.gif", "gif_alerta.gif")
       ]
-
+      
       ultimo = data.getUserVar('ultimo_bumper', config.guild_id)
       ultimo = int(ultimo) if ultimo else None
     
